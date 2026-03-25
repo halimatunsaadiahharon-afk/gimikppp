@@ -18,7 +18,7 @@
             margin: 0; padding: 0; height: 100%; 
             font-family: 'Montserrat', sans-serif; 
             overflow: hidden; 
-            background: #000; /* Latar hitam gelap untuk video */
+            background: #000; 
             color: #fff; 
             cursor: pointer; 
             -webkit-tap-highlight-color: transparent; 
@@ -31,7 +31,6 @@
             color: #555; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; 
         }
 
-        /* EXIT BUTTON (X) */
         #exit-btn {
             position: fixed; top: 20px; right: 20px; z-index: 10000;
             width: 40px; height: 40px; background: rgba(255, 0, 0, 0.3);
@@ -41,24 +40,21 @@
             cursor: pointer; opacity: 0; transition: opacity 1s;
         }
 
-        /* CONTAINER UTAMA (UNTUK KLIK) */
         #main-container { 
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; 
             z-index: 10; display: flex; justify-content: center; align-items: center; 
             background: #000;
         }
 
-        /* STYLE VIDEO FULLSCREEN (RESPONSIVE) */
         .fullscreen-video {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* Menggunakan contain supaya keseluruhan video masuk dalam skrin tanpa terpotong di mobile */
             object-fit: contain; 
             background-color: #000;
-            display: none; /* Sembunyi secara default */
+            display: none; 
             z-index: 1;
         }
 
@@ -69,16 +65,15 @@
             justify-content: center; align-items: center; 
             position: absolute; top: 0; left: 0; z-index: 5;
             
-            /* --- KEMASKINI: Menggunakan imej sebagai latar belakang --- */
-            background-color: #000812; /* Warna fallback jika imej tidak dimuatkan */
-            background-image: url('img.jpg'); /* Fail imej anda */
-            background-size: cover; /* Memastikan imej meliputi keseluruhan skrin */
-            background-position: center; /* Memusatkan imej */
-            background-repeat: no-repeat; /* Mengelakkan imej berulang */
+            /* --- KEMASKINI: Menggunakan kelegapan (opacity) 60% pada imej latar belakang --- */
+            background-color: #000812; 
+            background-image: linear-gradient(rgba(0, 8, 18, 0.4), rgba(0, 8, 18, 0.4)), url('img.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
         }
         
         .official-card {
-            /* Kekalkan latar semi-transparent dan kesan blur supaya teks mudah dibaca di atas imej */
             background: rgba(0, 10, 30, 0.85); 
             backdrop-filter: blur(20px);
             border: 1px solid rgba(0, 255, 204, 0.5);
@@ -115,10 +110,6 @@
         }
         
         .vip-role { font-size: 1.2rem; color: #fff; font-weight: 400; opacity: 0.9; text-transform: capitalize;}
-
-        /* =========================================
-           RESPONSIVE MOBILE STYLES (MEDIA QUERIES)
-           ========================================= */
 
         @media screen and (max-width: 850px) { 
             .official-card { padding: 40px 30px; width: 90%; }
@@ -183,42 +174,34 @@
         const exitBtn = document.getElementById('exit-btn');
 
         let currentPhase = 0; 
-        // 0: Setup, 1: Loop place.mp4, 2: Loop access.mp4, 3: Papar Kad Rasmi
 
-        // --- TEKNIKAL START ---
         function startScene() {
             document.getElementById('setup-overlay').style.display = 'none';
             exitBtn.style.opacity = '1'; 
             
-            // Muatkan video awal
             vidPlace.load();
             vidAccess.load();
 
-            // Minta Fullscreen Browser
             const elem = document.documentElement;
             if (elem.requestFullscreen) { elem.requestFullscreen().catch(err => {}); } 
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } // iOS Safari
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
             
-            // Masuk Fasa 1 (Mainkan place.mp4)
             currentPhase = 1; 
             vidPlace.style.display = 'block';
             vidPlace.play();
         }
 
-        // --- CONTROLLER KLIK MANUAL ---
         function handleScreenClick() {
             if (currentPhase === 1) {
-                // KLIK 1: Tukar dari place.mp4 ke access.mp4
                 vidPlace.pause();
                 vidPlace.style.display = 'none';
                 
                 currentPhase = 2;
                 vidAccess.style.display = 'block';
-                vidAccess.currentTime = 0; // Reset video dari mula
+                vidAccess.currentTime = 0; 
                 vidAccess.play();
 
             } else if (currentPhase === 2) {
-                // KLIK 2: Tutup video dan buka Kad Rasmi
                 vidAccess.pause();
                 vidAccess.style.display = 'none';
                 
@@ -227,17 +210,14 @@
             }
         }
 
-        // --- FASA AKHIR: PAPARAN KAD RASMI ---
         function showOfficialCard() {
-            // Tunjuk background korporat (dengan imej) & kad rasmi
             cardContainer.style.display = 'flex';
-            void cardContainer.offsetWidth; // Reflow untuk pastikan animasi pop berjalan
+            void cardContainer.offsetWidth; 
             cardContainer.style.opacity = '1';
         }
 
-        // --- EXIT FUNCTION ---
         function exitSystem(e) {
-            e.stopPropagation(); // Elak dari trigger handleScreenClick pada masa yang sama
+            e.stopPropagation(); 
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             try { window.open('', '_self', ''); window.close(); } catch(e) {}
