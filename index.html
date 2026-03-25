@@ -18,7 +18,7 @@
             margin: 0; padding: 0; height: 100%; 
             font-family: 'Montserrat', sans-serif; 
             overflow: hidden; 
-            background: #000; /* Latar hitam gelap untuk video */
+            background: #000; 
             color: #fff; 
             cursor: pointer; 
             -webkit-tap-highlight-color: transparent; 
@@ -54,8 +54,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Memastikan video penuh skrin tanpa putus */
-            display: none; /* Sembunyi secara default */
+            object-fit: cover; 
+            display: none; 
             z-index: 1;
         }
 
@@ -65,7 +65,7 @@
             width: 100%; height: 100%; 
             justify-content: center; align-items: center; 
             position: absolute; top: 0; left: 0; z-index: 5;
-            background: radial-gradient(circle at center, #002d5a 0%, #000812 100%); /* Latar biru korporat */
+            background: radial-gradient(circle at center, #002d5a 0%, #000812 100%); 
         }
         
         .official-card {
@@ -81,13 +81,14 @@
             transform: scale(0.9); opacity: 0;
             animation: cardPop 1s ease 0.5s forwards;
         }
+        
         @keyframes cardPop { to { transform: scale(1); opacity: 1; } }
 
         h1 { 
             color: #fff; font-family: 'Montserrat', sans-serif; text-transform: uppercase; 
             font-weight: 900; margin: 0 0 30px 0; line-height: 1.3; 
             text-shadow: 0 0 30px rgba(0, 150, 255, 0.8); 
-            font-size: clamp(1.5rem, 4vw, 3.2rem); letter-spacing: 2px; 
+            font-size: clamp(1.8rem, 4vw, 3.2rem); letter-spacing: 2px; 
         }
         
         .separator-line { 
@@ -106,15 +107,49 @@
         
         .vip-role { font-size: 1.2rem; color: #fff; font-weight: 400; opacity: 0.9; text-transform: capitalize;}
 
-        @media screen and (max-width: 768px) { 
-            .official-card { padding: 40px 20px; width: 90%; }
+        /* =========================================
+           RESPONSIVE MOBILE STYLES (MEDIA QUERIES)
+           ========================================= */
+
+        /* Tablet & Telefon Besar */
+        @media screen and (max-width: 850px) { 
+            .official-card { padding: 40px 30px; width: 90%; }
+            h1 { font-size: 1.8rem; margin-bottom: 20px; line-height: 1.4; letter-spacing: 1px; }
+            .separator-line { margin-bottom: 20px; width: 80px; }
+            .vip-label { font-size: 0.85rem; letter-spacing: 2px; }
+            .vip-name { font-size: 1.3rem; }
+            .vip-role { font-size: 1rem; }
+        }
+
+        /* Telefon Pintar (Mobile Portrait) */
+        @media screen and (max-width: 480px) { 
+            .official-card { padding: 30px 15px; width: 95%; border-radius: 10px; }
+            h1 { font-size: 1.4rem; margin-bottom: 15px; }
+            .separator-line { margin-bottom: 15px; width: 60px; height: 2px; }
+            .vip-label { font-size: 0.75rem; letter-spacing: 1.5px; }
+            .vip-name { font-size: 1.1rem; }
+            .vip-role { font-size: 0.9rem; }
+            
+            #exit-btn { top: 15px; right: 15px; width: 35px; height: 35px; font-size: 1rem; }
+        }
+
+        /* Telefon Pintar (Mobile Landscape / Skrin Rendah) */
+        @media screen and (max-height: 500px) {
+            .official-card { padding: 20px 15px; flex-direction: column; justify-content: center; }
+            h1 { font-size: 1.3rem; margin-bottom: 10px; line-height: 1.2; }
+            .separator-line { margin-bottom: 10px; }
+            .vip-section { gap: 5px; }
+            .vip-name { font-size: 1.1rem; margin: 0; }
+            .vip-role { font-size: 0.9rem; }
+            #exit-btn { top: 10px; right: 10px; width: 30px; height: 30px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body> 
     <div id="setup-overlay" onclick="startScene()">[ KLIK UNTUK MULA PAPARAN ]</div>
-    <div id="exit-btn" onclick="exitSystem(event)">X</div>
     
+    <div id="exit-btn" onclick="exitSystem(event)">X</div>
+
     <div id="main-container" onclick="handleScreenClick()">
         
         <video id="vid-place" class="fullscreen-video" src="place.mp4" playsinline loop preload="auto"></video>
@@ -156,6 +191,7 @@
             // Minta Fullscreen Browser
             const elem = document.documentElement;
             if (elem.requestFullscreen) { elem.requestFullscreen().catch(err => {}); } 
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } // iOS Safari
             
             // Masuk Fasa 1 (Mainkan place.mp4)
             currentPhase = 1; 
@@ -172,6 +208,7 @@
                 
                 currentPhase = 2;
                 vidAccess.style.display = 'block';
+                vidAccess.currentTime = 0; // Reset video dari mula
                 vidAccess.play();
 
             } else if (currentPhase === 2) {
@@ -188,14 +225,15 @@
         function showOfficialCard() {
             // Tunjuk background korporat & kad rasmi
             cardContainer.style.display = 'flex';
-            void cardContainer.offsetWidth; // Reflow untuk animasi pop
+            void cardContainer.offsetWidth; // Reflow untuk pastikan animasi pop berjalan
             cardContainer.style.opacity = '1';
         }
 
         // --- EXIT FUNCTION ---
         function exitSystem(e) {
-            e.stopPropagation(); // Elak dari trigger handleScreenClick
+            e.stopPropagation(); // Elak dari trigger handleScreenClick pada masa yang sama
             if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             try { window.open('', '_self', ''); window.close(); } catch(e) {}
             document.body.innerHTML = ""; document.body.style.background = "black";
             setTimeout(() => { window.location.href = "about:blank"; }, 1000);
